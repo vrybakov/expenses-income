@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.ryb.budget.dto.ExpensesListResponseDTO;
+import ru.ryb.budget.dto.PeriodExpenses;
 import ru.ryb.budget.model.Expenses;
 import ru.ryb.budget.service.ExpensesService;
 
@@ -31,10 +32,10 @@ public class ExpensesController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ExpensesListResponseDTO> getListExpenses(@RequestParam int year,
-                                                                   @RequestParam int month, @PathVariable int categoryId) {
+    public ResponseEntity<ExpensesListResponseDTO> getListExpenses(@RequestBody PeriodExpenses request, @PathVariable int categoryId) {
+        request.setCategoryId(categoryId);
         ExpensesListResponseDTO response = new ExpensesListResponseDTO();
-        response.setExpenses(expensesService.getListExpenses(categoryId, year, month));
+        response.setExpenses(expensesService.getListExpenses(request));
         return ResponseEntity.ok(response);
     }
 

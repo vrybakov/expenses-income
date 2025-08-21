@@ -2,6 +2,7 @@ package ru.ryb.budget.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.ryb.budget.dto.PeriodExpenses;
 import ru.ryb.budget.model.Expenses;
 import ru.ryb.budget.repository.ExpensesRepository;
 
@@ -40,11 +41,11 @@ public class ExpensesService {
         return expensesRepository.save(request);
     }
 
-    public List<Expenses> getListExpenses(int categoryId, int year, int month) {
-        LocalDate beginDate = LocalDate.of(year, month, 1);
+    public List<Expenses> getListExpenses(PeriodExpenses periodExpenses) {
+        LocalDate beginDate = LocalDate.of(periodExpenses.getYear(), periodExpenses.getMonth(), 1);
         LocalDate endDate = beginDate.with(TemporalAdjusters.lastDayOfMonth());
 
-        return expensesRepository.findAllByCategoryIdAndCreateDateBetween(categoryId, beginDate, endDate);
+        return expensesRepository.findAllByCategoryIdAndCreateDateBetween(periodExpenses.getCategoryId(), beginDate, endDate);
     }
 
     public Expenses subtract(Expenses request) {
