@@ -8,8 +8,6 @@ import ru.ryb.budget.model.AmountExpenses;
 import ru.ryb.budget.repository.AnalyzerRepository;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,17 +22,23 @@ public class AnalyzerService {
     }
 
     public AmountResponse getAmountForPeriod(PeriodExpenses periodExpenses) {
-        LocalDate beginDate = LocalDate.of(periodExpenses.getYear(), periodExpenses.getMonth(), 1);
-        LocalDate endDate = beginDate.with(TemporalAdjusters.lastDayOfMonth());
-        List<AmountExpenses> expensesList = periodExpenses.getCategoryId() != null
-                ? analyzerRepository.findByCategoryIdAndCreateDateBetween(periodExpenses.getCategoryId(), beginDate, endDate)
-                : analyzerRepository.findByCreateDateBetween(beginDate, endDate);
+        List<AmountExpenses> expensesList;
+        if (periodExpenses.getEndDate() == null && periodExpenses.getBeginDate() == null) {
+            expensesList = analyzerRepository.findAllByCategoryId(periodExpenses.getCategoryId());
+        } else {
+            expensesList = periodExpenses.getCategoryId() != null
+                    ? analyzerRepository.findByCategoryIdAndCreateDateBetween(periodExpenses.getCategoryId(), periodExpenses.getBeginDate(), periodExpenses.getEndDate())
+                    : analyzerRepository.findByCreateDateBetween(periodExpenses.getBeginDate(), periodExpenses.getEndDate());
+        }
+        AmountResponse response = new AmountResponse();
+        response.setAmount(calculateSum(expensesList));
+        return response;
+    }
+
+    private BigDecimal calculateSum(List<AmountExpenses> expensesList) {
         List<BigDecimal> amountList = new ArrayList<>();
         expensesList.forEach(expenses -> amountList.add(expenses.getAmount()));
-        BigDecimal sum = amountList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-        AmountResponse response = new AmountResponse();
-        response.setAmount(sum);
-        return response;
+        return amountList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
 }

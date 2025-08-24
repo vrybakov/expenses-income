@@ -4,13 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @ToString
 public class PeriodExpenses {
 
-    private Integer year;
-    private Integer month;
+    private LocalDate beginDate;
+    private LocalDate endDate;
     private Integer categoryId;
 
 }

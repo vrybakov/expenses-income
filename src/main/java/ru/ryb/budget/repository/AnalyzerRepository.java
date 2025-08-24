@@ -15,4 +15,6 @@ public interface AnalyzerRepository extends JpaRepository<Expenses, Integer> {
 
     List<AmountExpenses> findByCreateDateBetween(LocalDate beginDate, LocalDate endDate);
 
+    List<AmountExpenses> findAllByCategoryId(Integer categoryId);
+
 }

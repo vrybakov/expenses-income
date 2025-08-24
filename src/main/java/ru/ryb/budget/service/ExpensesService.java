@@ -7,7 +7,6 @@ import ru.ryb.budget.model.Expenses;
 import ru.ryb.budget.repository.ExpensesRepository;
 
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @Service
@@ -42,10 +41,7 @@ public class ExpensesService {
     }
 
     public List<Expenses> getListExpenses(PeriodExpenses periodExpenses) {
-        LocalDate beginDate = LocalDate.of(periodExpenses.getYear(), periodExpenses.getMonth(), 1);
-        LocalDate endDate = beginDate.with(TemporalAdjusters.lastDayOfMonth());
-
-        return expensesRepository.findAllByCategoryIdAndCreateDateBetween(periodExpenses.getCategoryId(), beginDate, endDate);
+        return expensesRepository.findAllByCategoryIdAndCreateDateBetween(periodExpenses.getCategoryId(), periodExpenses.getBeginDate(), periodExpenses.getEndDate());
     }
 
     public Expenses subtract(Expenses request) {
